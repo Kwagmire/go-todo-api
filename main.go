@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 
 	"github.com/Kwagmire/go-todo-api/internal/app/handlers"
 	"github.com/Kwagmire/go-todo-api/internal/pkg/auth"
@@ -31,8 +32,16 @@ func main() {
 	mux.HandleFunc("PUT /todos/", auth.AuthMiddleware(handlers.UpdateTodo))
 	mux.HandleFunc("DELETE /todos/", auth.AuthMiddleware(handlers.DeleteTodo))
 
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowCredentials: true,
+	})
+
+	handler := c.Handler(mux)
 	serverPort := ":8080"
 
 	fmt.Printf("Todo API server starting on http://localhost%s...", serverPort)
-	log.Fatal(http.ListenAndServe(serverPort, mux))
+	log.Fatal(http.ListenAndServe(serverPort, handler))
 }
