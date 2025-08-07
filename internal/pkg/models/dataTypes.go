@@ -8,10 +8,9 @@ type ListCurator struct {
 }
 
 type TodoItem struct {
-	ID        int    `json:"id"`
-	CuratorID int    `json:"curator_id"`
-	Title     string `json:"title"`
-	Desc      string `json:"description"`
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+	Desc  string `json:"description"`
 }
 
 type RegisterRequest struct {

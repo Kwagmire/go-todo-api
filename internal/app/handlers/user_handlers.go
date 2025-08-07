@@ -6,9 +6,9 @@ import (
 	"io"
 	"net/http"
 
-	"go-todo-api/internal/pkg/auth"
-	"go-todo-api/internal/pkg/db"
-	"go-todo-api/internal/pkg/models"
+	"github.com/Kwagmire/go-todo-api/internal/pkg/auth"
+	"github.com/Kwagmire/go-todo-api/internal/pkg/db"
+	"github.com/Kwagmire/go-todo-api/internal/pkg/models"
 
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -66,9 +66,9 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.GenerateJWT(userID)
+	token, err := auth.GenerateToken(userID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to generate authentication token")
+		http.Error(w, "Failed to generate authentication token", http.StatusInternalServerError)
 		return
 	}
 
@@ -105,7 +105,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		WHERE email = $1`
 	var userID int
 	var hashedPassword string
-	err := db.DB.QueryRow(query, thisRequest.Email).Scan(&userID, &hashedPassword)
+	err = db.DB.QueryRow(query, thisRequest.Email).Scan(&userID, &hashedPassword)
 	if err == sql.ErrNoRows {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
@@ -115,14 +115,14 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := bvrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(thisRequest.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(thisRequest.Password)); err != nil {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
-	token, err := auth.GenerateJWT(userID)
+	token, err := auth.GenerateToken(userID)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to generate authentication token")
+		http.Error(w, "Failed to generate authentication token", http.StatusInternalServerError)
 		return
 	}
 
