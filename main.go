@@ -1,3 +1,11 @@
+// @title ToDo List API
+// @version 1.0
+// @description This is a sample ToDo List API built with Go.
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 package main
 
 import (
@@ -11,6 +19,9 @@ import (
 	"github.com/Kwagmire/go-todo-api/internal/app/handlers"
 	"github.com/Kwagmire/go-todo-api/internal/pkg/auth"
 	"github.com/Kwagmire/go-todo-api/internal/pkg/db"
+
+	_ "github.com/Kwagmire/go-todo-api/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func main() {
@@ -22,6 +33,10 @@ func main() {
 	db.InitDB()
 
 	mux := http.NewServeMux()
+
+	mux.HandleFunc("/swagger/", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), //The url pointing to API definition
+	))
 
 	mux.HandleFunc("POST /register", handlers.RegisterUser)
 	mux.HandleFunc("POST /login", handlers.LoginUser)

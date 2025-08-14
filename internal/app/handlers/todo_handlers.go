@@ -13,6 +13,17 @@ import (
 	"github.com/Kwagmire/go-todo-api/internal/pkg/models"
 )
 
+// @Summary Create a new ToDo item
+// @Description Creates a new to-do item for the authenticated user
+// @Tags todos
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json,plain
+// @Param   todo  body  models.CreateRequest  true  "Todo item to be created"
+// @Success 201 {object} models.TodoItem
+// @Failure 400 {string} string "Invalid request payload"
+// @Failure 401 {string} string "Unauthorized"
+// @Router /todos [post]
 func AddTodo(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Unaccepted method", http.StatusMethodNotAllowed)
@@ -64,6 +75,18 @@ func AddTodo(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, thisTodo)
 }
 
+// @Summary Update a ToDo item
+// @Description Edit an existing to-do item for the authenticated user
+// @Tags todos
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json,plain
+// @Param   todo  body  models.CreateRequest  true  "New details for the to-do item"
+// @Success 200 {object} models.TodoItem
+// @Failure 400 {string} string "Invalid request payload"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 403 {string} string "Todo doesn't exist"
+// @Router /todos/{id} [put]
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Unaccepted method", http.StatusMethodNotAllowed)
@@ -128,6 +151,17 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, updatedTodo)
 }
 
+// @Summary Delete a ToDo item
+// @Description Delete an existing to-do item for the authenticated user
+// @Tags todos
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json,plain
+// @Success 204
+// @Failure 400 {string} string "Invalid request payload"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 403 {string} string "Todo doesn't exist"
+// @Router /todos/{id} [delete]
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodDelete {
 		http.Error(w, "Unaccepted method", http.StatusMethodNotAllowed)
@@ -169,6 +203,16 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// @Summary Get ToDo items
+// @Description Retrieve to-do items for the authenticated user
+// @Tags todos
+// @Security ApiKeyAuth
+// @Produce json,plain
+// @Param   page  query integer true "The page to view"
+// @Param   limit  query integer true "Number of items per page"
+// @Success 200 {object} map[string]interface{}
+// @Failure 401 {string} string "Unauthorized"
+// @Router /todos [get]
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Unaccepted method", http.StatusMethodNotAllowed)

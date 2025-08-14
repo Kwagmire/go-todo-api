@@ -1,0 +1,241 @@
+basePath: /
+definitions:
+  models.CreateRequest:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  models.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.RegisterRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  models.TodoItem:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample ToDo List API built with Go.
+  title: ToDo List API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user with provided credentials
+      parameters:
+      - description: User login credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Log a user in
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided credentials
+      parameters:
+      - description: Credentials for new user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.RegisterRequest'
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "403":
+          description: User exists
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Register a new user
+  /todos:
+    get:
+      description: Retrieve to-do items for the authenticated user
+      parameters:
+      - description: The page to view
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Get ToDo items
+      tags:
+      - todos
+    post:
+      consumes:
+      - application/json
+      description: Creates a new to-do item for the authenticated user
+      parameters:
+      - description: Todo item to be created
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateRequest'
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.TodoItem'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new ToDo item
+      tags:
+      - todos
+  /todos/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an existing to-do item for the authenticated user
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Todo doesn't exist
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a ToDo item
+      tags:
+      - todos
+    put:
+      consumes:
+      - application/json
+      description: Edit an existing to-do item for the authenticated user
+      parameters:
+      - description: New details for the to-do item
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateRequest'
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TodoItem'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "403":
+          description: Todo doesn't exist
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Update a ToDo item
+      tags:
+      - todos
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

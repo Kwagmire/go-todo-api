@@ -14,6 +14,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// @Summary Register a new user
+// @Description Creates a new user with the provided credentials
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json,plain
+// @Param   user  body  models.RegisterRequest  true  "Credentials for new user"
+// @Success 201 {object} map[string]string
+// @Failure 400 {string} string "Invalid request payload"
+// @Failure 403 {string} string "User exists"
+// @Router /register [post]
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Unaccepted method", http.StatusMethodNotAllowed)
@@ -75,6 +85,16 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, map[string]string{"token": token})
 }
 
+// @Summary Log a user in
+// @Description Authenticate a user with provided credentials
+// @Security ApiKeyAuth
+// @Accept  json
+// @Produce json,plain
+// @Param   user  body  models.LoginRequest  true  "User login credentials"
+// @Success 201 {object} map[string]string
+// @Failure 400 {string} string "Invalid request payload"
+// @Failure 401 {string} string "Unauthorized"
+// @Router /login [post]
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Unaccepted method", http.StatusMethodNotAllowed)
